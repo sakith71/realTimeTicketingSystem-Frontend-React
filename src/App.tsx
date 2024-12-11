@@ -14,6 +14,15 @@ function App() {
     "Enter the Number Of Customers",
   ];
 
+  const [formData, setFormData] = useState({
+    totalTickets: 0,
+    ticketReleaseRate: 0,
+    customerRetrievalRate: 0,
+    maxTicketCapacity: 0,
+    numVendors: 0,
+    numCustomers: 0,
+  });
+
   const [ticketCount, setTicketCount] = useState(0); // Example initial ticket count
   const [logs, setLogs] = useState<string[]>([]);
   const [isRunning, setIsRunning] = useState(false);
@@ -21,12 +30,15 @@ function App() {
   useEffect(() => {
     if (isRunning) {
       const interval = setInterval(() => {
-        // Simulate ticket updates
-        setTicketCount((prev) => {
-          const newCount = prev > 0 ? prev - 1 : 0;
-          addLog(`Ticket pool updated: ${newCount} tickets left`);
-          return newCount;
-        });
+        fetch("http://localhost:8081/api/simulation/ticketCount")
+          .then((res) => res.json())
+          .then((data) => setTicketCount(data))
+          .catch((err) => console.error(err));
+
+        fetch("http://localhost:8081/api/simulation/logs")
+          .then((res) => res.json())
+          .then((data) => setLogs(data))
+          .catch((err) => console.error(err));
       }, 1000);
 
       return () => clearInterval(interval);
@@ -34,17 +46,44 @@ function App() {
   }, [isRunning]);
 
   const handleStart = () => {
-    setIsRunning(true);
-    addLog("Simulation started");
+    fetch("http://localhost:8081/api/simulation/start", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
+    })
+      .then((response) => response.text())
+      .then((message) => {
+        console.log(message);
+        setIsRunning(true);
+      })
+      .catch((error) => console.error("Error starting simulation:", error));
   };
 
   const handleStop = () => {
-    setIsRunning(false);
-    addLog("Simulation stopped");
+    fetch("http://localhost:8081/api/simulation/stop", {
+      method: "POST",
+    })
+      .then((response) => response.text())
+      .then((message) => {
+        console.log(message);
+        setIsRunning(false);
+      })
+      .catch((error) => console.error("Error stopping simulation:", error));
   };
 
-  const addLog = (message: string) => {
-    setLogs((prevLogs) => [...prevLogs, message]);
+  const updateFormData = (index: number, value: string) => {
+    const fieldNames = [
+      "totalTickets",
+      "ticketReleaseRate",
+      "customerRetrievalRate",
+      "maxTicketCapacity",
+      "numVendors",
+      "numCustomers",
+    ];
+    const key = fieldNames[index] as keyof typeof formData;
+    setFormData({ ...formData, [key]: Number(value) });
   };
 
   return (
@@ -53,7 +92,18 @@ function App() {
         {/* Left Section: Configuration Form */}
         <div className="col-lg-6 col-md-12 mb-4">
           <div className="p-3 bg-light shadow rounded">
-            <ConfigurationForm inputFields={inputFields} />
+            {inputFields.map((field, index) => (
+              <div className="form-floating mb-3" key={index}>
+                <input
+                  type="number"
+                  className="form-control"
+                  id={`input-${index}`}
+                  placeholder={field}
+                  onChange={(e) => updateFormData(index, e.target.value)}
+                />
+                <label htmlFor={`input-${index}`}>{field}</label>
+              </div>
+            ))}
             <ControlPanel onStart={handleStart} onStop={handleStop} />
           </div>
         </div>
