@@ -1,33 +1,29 @@
 import React from "react";
 
-interface Props {
+type LogDisplayProps = {
   logs: string[];
-}
+};
 
-const LogDisplay = ({ logs }: Props) => {
+const LogDisplay: React.FC<LogDisplayProps> = ({ logs }) => {
   return (
     <div>
-      <h4 className="text-center mb-3">Simulation Logs</h4>
+      <h4>Simulation Logs</h4>
       <div
-        className="log-box"
         style={{
-          maxHeight: "350px",
+          maxHeight: "370px",
           overflowY: "scroll",
-          backgroundColor: "#f8f9fa",
+          border: "1px solid #ccc",
           padding: "10px",
-          border: "1px solid #ddd",
-          borderRadius: "4px",
+          boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+          backgroundColor: "#f9f9f9",
+        
         }}
       >
-        {logs.length > 0 ? (
-          logs.map((log, index) => (
-            <p key={index} className="mb-1">
-              {log}
-            </p>
-          ))
-        ) : (
-          <p className="text-muted">No logs yet</p>
-        )}
+        {logs.map((log, index) => (
+          <p key={index} style={{ margin: "", fontSize: "16px" }}>
+            {log}
+          </p>
+        ))}
       </div>
     </div>
   );

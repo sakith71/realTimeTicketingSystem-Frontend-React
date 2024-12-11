@@ -2,9 +2,10 @@ import React from "react";
 
 interface Props {
   inputFields: string[];
+  onChange: (index: number, value: string) => void;
 }
 
-const ConfigurationForm = ({ inputFields }: Props) => {
+const ConfigurationForm = ({ inputFields, onChange }: Props) => {
   return (
     <div>
       <h2 className="text-center mb-4">Configuration Form</h2>
@@ -15,6 +16,7 @@ const ConfigurationForm = ({ inputFields }: Props) => {
             className="form-control"
             id={`input-${index}`}
             placeholder={field}
+            onChange={(e) => onChange(index, e.target.value)} // Call onChange with index and value
           />
           <label htmlFor={`input-${index}`}>{field}</label>
         </div>
