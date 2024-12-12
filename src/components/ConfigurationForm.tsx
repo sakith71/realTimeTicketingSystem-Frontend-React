@@ -3,9 +3,10 @@ import React from "react";
 interface Props {
   inputFields: string[];
   onChange: (index: number, value: string) => void;
+  errors: string[];
 }
 
-const ConfigurationForm = ({ inputFields, onChange }: Props) => {
+const ConfigurationForm = ({ inputFields, onChange, errors }: Props) => {
   return (
     <div>
       <h2 className="text-center mb-4">Configuration Form</h2>
@@ -13,12 +14,15 @@ const ConfigurationForm = ({ inputFields, onChange }: Props) => {
         <div className="form-floating mb-3" key={index}>
           <input
             type="text"
-            className="form-control"
+            className={`form-control ${errors[index] ? "is-invalid" : ""}`}
             id={`input-${index}`}
             placeholder={field}
-            onChange={(e) => onChange(index, e.target.value)} // Call onChange with index and value
+            onChange={(e) => onChange(index, e.target.value)}
           />
           <label htmlFor={`input-${index}`}>{field}</label>
+          {errors[index] && (
+            <div className="invalid-feedback">{errors[index]}</div>
+          )}
         </div>
       ))}
     </div>

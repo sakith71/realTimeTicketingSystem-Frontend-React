@@ -20,7 +20,7 @@ const LogDisplay: React.FC<LogDisplayProps> = ({ logs }) => {
         }}
       >
         {logs.map((log, index) => (
-          <p key={index} style={{ margin: "", fontSize: "16px" }}>
+          <p key={index} style={{ margin: "0", fontSize: "14px" }}>
             {log}
           </p>
         ))}
